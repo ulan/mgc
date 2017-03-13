@@ -1,0 +1,20 @@
+{
+  "name": "mgc",
+  "version": "1.0.0",
+  "description": "Micro garbage collector.",
+  "main": "app.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "keywords": [
+    "gc",
+    "vm"
+  ],
+  "author": "Ulan Degenbaev",
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^3.17.0",
+    "mocha": "^3.2.0",
+    "webpack": "^2.2.1"
+  }
+}
