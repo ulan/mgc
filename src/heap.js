@@ -12,31 +12,32 @@ class Heap {
   constructor() {
     this.pages = [];
     this.allocationArea = {page: null, start: 0, end: 0};
-    this.predefined = {zero: this.allocateNumber({}, 0)};
+    this.predefined = {}
+    this.predefined.zero = this.allocateNumber({}, 0);
   }
-  allocateNumber(context, value) {
-    let size = object.HeapNumber.sizeForAllocation();
-    let address = this.allocate(context, size);
+  allocateNumber(roots, value) {
+    let size = object.HeapNumber.sizeFor();
+    let address = this.allocate(roots, size);
     object.HeapNumber.initialize(address, value);
     return address;
   }
-  allocateString(context, value) {
-    let size = object.HeapString.sizeForAllocation(value.length);
-    let address = this.allocate(context, size);
+  allocateString(roots, value) {
+    let size = object.HeapString.sizeFor(value.length);
+    let address = this.allocate(roots, size);
     object.HeapString.initialize(address, value);
     return address;
   }
-  allocateArray(context, length) {
-    let size = object.HeapArray.sizeForAllocation(length);
-    let address = this.allocate(context, size);
+  allocateArray(roots, length) {
+    let size = object.HeapArray.sizeFor(length);
+    let address = this.allocate(roots, size);
     object.HeapArray.initialize(address, length, this.predefined.zero);
     return address;
   }
-  allocate(context, size) {
+  allocate(roots, size) {
     if (this.allocationAreaSize() < size) {
       this.retireAllocationArea();
       if (!this.findAllocationArea(size)) {
-        this.collectGarbage(context);
+        this.collectGarbage(roots);
         if (!this.findAllocationArea(size)) {
           throw new Error('Out of memory');
         }
@@ -80,18 +81,15 @@ class Heap {
     }
     return false;
   }
-  collectGarbage(context) {
+  collectGarbage(roots) {
     this.retireAllocationArea();
-    this.mark(context);
+    this.mark(roots);
     this.sweep(this.pages);
   }
-
-  mark(context) {
-    let roots = Object.values(this.predefined) + Object.values(context);
-    let marker = new Marker(roots);
+  mark(roots) {
+    let marker = new Marker(roots.concat(Object.values(this.predefined)));
     marker.run();
   }
-
   sweep(pages) {
     let sweeper = new Sweeper(pages);
     sweeper.run();

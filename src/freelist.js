@@ -37,12 +37,15 @@ class FreeList {
     };
   }
   add(start, end) {
-    if (start < end) {
-      let size = end - start;
+    let size = end - start;
+    if (size >= object.FreeSpace.minSize()) {
       object.FreeSpace.initialize(start, size);
-      if (size >= object.FreeSpace.fullSize()) {
-        object.FreeSpace.setNext(start, this.head);
-        this.head = start;
+      object.FreeSpace.setNext(start, this.head);
+      this.head = start;
+    } else {
+      while (start < end) {
+        object.Filler.initialize(start);
+        start += object.Filler.size(start);
       }
     }
   }

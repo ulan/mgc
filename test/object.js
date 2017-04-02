@@ -17,15 +17,6 @@ describe('object', function () {
     assert.equal(tag.NUMBER, object.Header.tag(address));
     assert.equal(10, object.HeapNumber.value(address));
   });
-  it('should initialize string', function() {
-    let allocation = memory.allocate(memory.PAGE_SIZE);
-    assert(allocation.success);
-    let address = allocation.address;
-    object.HeapString.initialize(address, "sample");
-    assert.equal(tag.STRING, object.Header.tag(address));
-    assert.equal(4 + 4 + 6 * 4, object.HeapString.size(address));
-    assert.equal("sample", object.HeapString.value(address));
-  });
   it('should initialize array', function() {
     let allocation = memory.allocate(memory.PAGE_SIZE);
     assert(allocation.success);
@@ -39,7 +30,7 @@ describe('object', function () {
     let allocation = memory.allocate(memory.PAGE_SIZE);
     assert(allocation.success);
     let address = allocation.address;
-    object.FreeSpace.initialize(address, object.FreeSpace.fullSize());
+    object.FreeSpace.initialize(address, object.FreeSpace.minSize());
     assert.equal(tag.FREE_SPACE, object.Header.tag(address));
     assert.equal(3 * 4, object.FreeSpace.size(address));
   });
